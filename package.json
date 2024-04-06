@@ -1,0 +1,32 @@
+{
+  "name": "koishi-plugin-wenyan",
+  "description": "Run wenyan-lang code",
+  "version": "0.0.1-alpha.1",
+  "main": "lib/index.js",
+  "typings": "lib/index.d.ts",
+  "files": [
+    "lib",
+    "dist"
+  ],
+  "license": "MIT",
+  "keywords": [
+    "chatbot",
+    "koishi",
+    "plugin"
+  ],
+  "peerDependencies": {
+    "koishi": "^4.16.8"
+  },
+  "dependencies": {
+    "@wenyan/core": "^0.3.4",
+    "@wenyan/wyg": "^0.2.3",
+    "byline": "^5.0.0",
+    "execa": "^8.0.1",
+    "which-pm-runs": "^1.1.0"
+  },
+  "devDependencies": {
+    "@dgck81lnn/koishi-plugin-eval": "4.1.5-a.fix",
+    "@types/byline": "^4.2.36",
+    "@types/which-pm-runs": "^1"
+  }
+}

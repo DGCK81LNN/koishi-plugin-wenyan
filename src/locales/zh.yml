@@ -1,0 +1,15 @@
+commands:
+  wenyan:
+    description: 编译/运行文言 lang
+    arguments:
+      code: 代码
+    options:
+      compile: 仅编译
+      roman: 指定标识符转写方式：none（默认）、pinyin、unicode、baxter
+      strict: 启用类型检查
+      outputHanzi: 启用汉字输出（默认开启，使用 --no-output-hanzi 或 -H 关闭）
+      stdin: 指定标准输入内容
+    messages:
+      invalid-romanize-method: 标识符转写方式无效
+      compile-error: 编译错误：{0}
+      minify-error: 压缩错误：{0}
