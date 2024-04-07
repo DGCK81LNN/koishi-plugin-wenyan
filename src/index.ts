@@ -17,7 +17,9 @@ export interface Config {
 export const Config: Schema<Config> = Schema.object({
   wygPackages: Schema.array(String)
     .role("table")
-    .description("需要安装的 [wyg](https://wyg.wy-lang.org) 包（必须填写中文名）列表。")
+    .description(
+      "需要安装的 [wyg](https://wyg.wy-lang.org) 包（必须填写中文名）列表。"
+    )
     .default([
       "交互秘術",
       "刻漏",
@@ -62,7 +64,10 @@ export async function apply(ctx: Context, config: Config) {
       const { name: pm } = whichPMRuns()
       if (!pm) throw new Error("Package manager not supported")
 
-      const wygCli = path.resolve(path.dirname(require.resolve("@wenyan/wyg")), "cli.js")
+      const wygCli = path.resolve(
+        path.dirname(require.resolve("@wenyan/wyg")),
+        "cli.js"
+      )
       const args = ["install", ...packagesNeeded]
       logger.info("wyg", ...args)
       const child = execaNode(wygCli, args, {
@@ -111,30 +116,36 @@ export async function apply(ctx: Context, config: Config) {
         return
       }
       let compiled = ""
+      let compileError = ""
       try {
         compiled = compileWenyan(code, {
           romanizeIdentifiers: options.roman,
           strict: options.strict,
-          importPaths: [ctx.baseDir],
+          importPaths: [path.resolve(ctx.baseDir, "藏書樓")],
+          logCallback: () => {},
+          errorCallback: msg => {
+            compileError += String(msg) + "\n"
+          },
         })
       } catch (err) {
-        await session.send(session.text(".compile-error", [String(err)]))
+        compileError = compileError.trim() || String(err)
+        await session.send(session.text(".compile-error", [compileError]))
         return
       }
       if (options.minify)
         try {
-          await minify(compiled, {
-            //toplevel: true,
-            compress: {
-              collapse_vars: true,
-              inline: false,
-            },
-            mangle: null,
-            format: {
-              comments: false,
-              keep_numbers: true,
-            },
-          })
+          compiled = (
+            await minify(compiled, {
+              toplevel: true,
+              compress: {
+                ecma: 2020,
+              },
+              mangle: null,
+              format: {
+                comments: false,
+              },
+            })
+          ).code
         } catch (err) {
           await session.send(session.text(".minify-error", [String(err)]))
           return
