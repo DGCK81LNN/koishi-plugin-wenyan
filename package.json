@@ -1,7 +1,7 @@
 {
   "name": "koishi-plugin-wenyan",
   "description": "Run wenyan-lang code",
-  "version": "0.0.1-alpha.1",
+  "version": "0.0.1-alpha.1.2",
   "main": "lib/index.js",
   "typings": "lib/index.d.ts",
   "files": [
@@ -25,7 +25,6 @@
     "which-pm-runs": "^1.1.0"
   },
   "devDependencies": {
-    "@dgck81lnn/koishi-plugin-eval": "4.1.5-a.fix",
     "@types/byline": "^4.2.36",
     "@types/which-pm-runs": "^1"
   }

@@ -1,11 +1,11 @@
+import type {} from "@koishijs/plugin-help"
 import { compile as compileWenyan } from "@wenyan/core"
 import type { RomanizeSystem } from "@wenyan/core/types"
 import byline from "byline"
-import { Context, Schema } from "koishi"
-import { minify } from "terser"
-import type {} from "@koishijs/plugin-help"
+import { Context, Schema, h } from "koishi"
 import { stat } from "node:fs/promises"
 import path from "node:path"
+import { minify } from "terser"
 
 export const name = "wenyan"
 //export const inject = ["worker"]
@@ -17,9 +17,7 @@ export interface Config {
 export const Config: Schema<Config> = Schema.object({
   wygPackages: Schema.array(String)
     .role("table")
-    .description(
-      "需要安装的 [wyg](https://wyg.wy-lang.org) 包（必须填写中文名）列表。"
-    )
+    .description("需要安装的 [wyg](https://wyg.wy-lang.org) 包（必须填写中文名）列表。")
     .default([
       "交互秘術",
       "刻漏",
@@ -64,10 +62,7 @@ export async function apply(ctx: Context, config: Config) {
       const { name: pm } = whichPMRuns()
       if (!pm) throw new Error("Package manager not supported")
 
-      const wygCli = path.resolve(
-        path.dirname(require.resolve("@wenyan/wyg")),
-        "cli.js"
-      )
+      const wygCli = path.resolve(path.dirname(require.resolve("@wenyan/wyg")), "cli.js")
       const args = ["install", ...packagesNeeded]
       logger.info("wyg", ...args)
       const child = execaNode(wygCli, args, {
@@ -107,9 +102,9 @@ export async function apply(ctx: Context, config: Config) {
     .option("roman", "<method:string>", { fallback: "none" })
     .option("strict", "", { fallback: false })
     .option("minify", "-m", { fallback: false })
-    .option("outputHanzi", "", { fallback: true })
+    //.option("outputHanzi", "", { fallback: true })
     .option("outputHanzi", "-H", { value: false, hidden: true })
-    .option("stdin", "-s <text:rawtext>")
+    //.option("stdin", "-s <text:rawtext>")
     .action(async ({ options, session }, code) => {
       if (!isValidRomanizeSystem(options.roman)) {
         await session.send(session.text(".invalid-romanize-method"))
@@ -129,7 +124,7 @@ export async function apply(ctx: Context, config: Config) {
         })
       } catch (err) {
         compileError = compileError.trim() || String(err)
-        await session.send(session.text(".compile-error", [compileError]))
+        await session.send(session.text(".compile-error", [h.escape(compileError)]))
         return
       }
       if (options.minify)
@@ -147,10 +142,10 @@ export async function apply(ctx: Context, config: Config) {
             })
           ).code
         } catch (err) {
-          await session.send(session.text(".minify-error", [String(err)]))
+          await session.send(session.text(".minify-error", [h.escape(String(err))]))
           return
         }
-      if (options.compile) return compiled
+      if (options.compile) return h.escape(compiled)
 
       await session.send("Not Implemented")
       return

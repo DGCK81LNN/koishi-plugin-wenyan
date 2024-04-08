@@ -8,6 +8,7 @@ commands:
       roman: 指定标识符转写方式：none（默认）、pinyin、unicode、baxter
       strict: 启用类型检查
       outputHanzi: 启用汉字输出（默认开启，使用 --no-output-hanzi 或 -H 关闭）
+      H: 等价于 --no-output-hanzi
       stdin: 指定标准输入内容
     messages:
       invalid-romanize-method: 标识符转写方式无效
