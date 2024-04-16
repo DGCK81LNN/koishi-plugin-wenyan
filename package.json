@@ -9,6 +9,11 @@
     "dist"
   ],
   "license": "MIT",
+  "homepage": "https://github.com/DGCK81LNN/koishi-plugin-wenyan",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/DGCK81LNN/koishi-plugin-wenyan.git"
+  },
   "keywords": [
     "chatbot",
     "koishi",
