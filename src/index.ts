@@ -1,11 +1,13 @@
 import type {} from "@koishijs/plugin-help"
 import { compile as compileWenyan } from "@wenyan/core"
-import type { RomanizeSystem } from "@wenyan/core/types"
+import type { MacroDefinition, RomanizeSystem } from "@wenyan/core/types"
 import byline from "byline"
 import { Context, Schema, h } from "koishi"
 import { stat } from "node:fs/promises"
 import path from "node:path"
+import { inspect } from "node:util"
 import { minify } from "terser"
+import { expandMacros } from "./macro"
 
 export const name = "wenyan"
 //export const inject = ["worker"]
@@ -38,6 +40,19 @@ export const Config: Schema<Config> = Schema.object({
 
 function isValidRomanizeSystem(method: string): method is RomanizeSystem {
   return ["none", "pinyin", "unicode", "baxter"].includes(method)
+}
+
+function isMacroDefinitionList(value: unknown): value is MacroDefinition[] {
+  return (
+    Array.isArray(value) &&
+    value.length &&
+    value.every(
+      item =>
+        Array.isArray(item) &&
+        item.length === 2 &&
+        item.every(subitem => typeof subitem === "string")
+    )
+  )
 }
 
 export async function apply(ctx: Context, config: Config) {
@@ -99,11 +114,14 @@ export async function apply(ctx: Context, config: Config) {
       showWarning: true,
     })
     .option("compile", "-c", { fallback: false })
-    .option("roman", "<method:string>", { fallback: "none" })
+    .option("macro", "<extract|expand>")
+    .option("macro", "-M", { value: "extract", hidden: true })
+    .option("macro", "-e", { value: "expand", hidden: true })
+    .option("roman", "<pinyin|unicode|baxter>", { fallback: "none" })
     .option("strict", "", { fallback: false })
     .option("minify", "-m", { fallback: false })
     //.option("outputHanzi", "", { fallback: true })
-    .option("outputHanzi", "-H", { value: false, hidden: true })
+    //.option("outputHanzi", "-H", { value: false, hidden: true })
     //.option("stdin", "-s <text:rawtext>")
     .action(async ({ options, session }, code) => {
       if (!isValidRomanizeSystem(options.roman)) {
@@ -112,12 +130,15 @@ export async function apply(ctx: Context, config: Config) {
       }
       let compiled = ""
       let compileError = ""
+      let macros: MacroDefinition[]
       try {
         compiled = compileWenyan(code, {
           romanizeIdentifiers: options.roman,
           strict: options.strict,
           importPaths: [path.resolve(ctx.baseDir, "藏書樓")],
-          logCallback: () => {},
+          logCallback: msg => {
+            if (isMacroDefinitionList(msg)) macros ??= msg
+          },
           errorCallback: msg => {
             compileError += String(msg) + "\n"
           },
@@ -125,6 +146,19 @@ export async function apply(ctx: Context, config: Config) {
       } catch (err) {
         compileError = compileError.trim() || String(err)
         await session.send(session.text(".compile-error", [h.escape(compileError)]))
+        return
+      }
+      if (options.macro) {
+        if (!macros || !macros.length) {
+          await session.send(session.text(".no-macro"))
+          return
+        }
+        if (options.macro === "extract")
+          return macros
+            .map(([from, to]) => `${inspect(new RegExp(from))} → ${inspect(to)}`)
+            .join("\n")
+        if (options.macro === "expand") return h.escape(expandMacros(code, macros))
+        await session.send(session.text(".invalid-macro-action"))
         return
       }
       if (options.minify)

@@ -5,12 +5,15 @@ commands:
       code: 代码
     options:
       compile: 仅编译
-      roman: 指定标识符转写方式：none（默认）、pinyin、unicode、baxter
+      macro: 仅解析/展开宏定义（分别可简写为 -M、-e）
+      roman: 指定标识符转写方式
       strict: 启用类型检查
+      minify: 压缩编译后的 JavaScript 代码
       outputHanzi: 启用汉字输出（默认开启，使用 --no-output-hanzi 或 -H 关闭）
-      H: 等价于 --no-output-hanzi
       stdin: 指定标准输入内容
     messages:
-      invalid-romanize-method: 标识符转写方式无效
+      invalid-romanize-method: 标识符转写方式无效。
+      invalid-macro-action: macro 选项值无效。
+      no-macro: 未捕获到任何宏定义。
       compile-error: 编译错误：{0}
       minify-error: 压缩错误：{0}
