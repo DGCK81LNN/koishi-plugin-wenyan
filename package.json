@@ -1,7 +1,7 @@
 {
   "name": "koishi-plugin-wenyan",
   "description": "Run wenyan-lang code",
-  "version": "0.0.1-alpha.2.1",
+  "version": "0.1.0",
   "main": "lib/index.js",
   "typings": "lib/index.d.ts",
   "files": [
@@ -15,9 +15,8 @@
     "url": "git+https://github.com/DGCK81LNN/koishi-plugin-wenyan.git"
   },
   "keywords": [
-    "chatbot",
-    "koishi",
-    "plugin"
+    "esolang",
+    "esoteric"
   ],
   "peerDependencies": {
     "koishi": "^4.16.8"
@@ -27,11 +26,9 @@
     "@wenyan/wyg": "^0.2.3",
     "byline": "^5.0.0",
     "execa": "^8.0.1",
-    "terser": "^5.30.3",
-    "which-pm-runs": "^1.1.0"
+    "terser": "^5.30.3"
   },
   "devDependencies": {
-    "@types/byline": "^4.2.36",
-    "@types/which-pm-runs": "^1"
+    "@types/byline": "^4.2.36"
   }
 }
