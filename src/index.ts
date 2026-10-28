@@ -11,7 +11,6 @@ import { minify } from "terser"
 import { expandMacros } from "./macro"
 
 export const name = "wenyan"
-//export const inject = ["worker"]
 
 export interface Config {
   wygPackages: string[]
@@ -141,9 +140,9 @@ export async function apply(ctx: Context, config: Config) {
     .option("roman", "<pinyin|unicode|baxter>")
     .option("strict", "")
     .option("minify", "-m")
-    .option("outputHanzi", "")
+    .option("outputHanzi", "", { hidden: true })
     .option("outputHanzi", "-H, --no-output-hanzi", { value: false })
-    .option("stdin", "-s <text:rawtext>")
+    .option("stdin", "-s <text>")
     .action(async ({ options, session, root }, code) => {
       if (options.roman && !isValidRomanizeSystem(options.roman)) {
         await session.send(session.i18n(".invalid-romanize-method"))
